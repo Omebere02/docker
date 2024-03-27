@@ -1,27 +1,18 @@
-# Use Alpine Linux as the base image
+# Use Alpine latest as the base image
 FROM alpine:latest
 
-# Add metadata to the image
-LABEL maintainer="coacht" <devopstrainingwitcoacht@gmail.com>
-LABEL description="This example Dockerfile installs NGINX."
+# Install NGINX
+RUN apk add --no-cache nginx
 
-# Install NGINX and set up the environment
-RUN apk add --update nginx && \
-    rm -rf /var/cache/apk/* && \
-    mkdir -p /tmp/nginx/
+# Create a directory for pid and run files
+RUN mkdir -p /run/nginx
 
-# Copy configuration files from the host to the container
-COPY files/nginx.conf /etc/nginx/nginx.conf
-COPY files/default.conf /etc/nginx/conf.d/default.conf
-
-# Add and extract the HTML content to the web root
-ADD files/html.tar.gz /usr/share/nginx/
+# Copy the default NGINX configuration files (if you have custom configurations)
+# COPY nginx.conf /etc/nginx/nginx.conf
+# COPY default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
-EXPOSE 80/tcp
+EXPOSE 80
 
-# Set NGINX as the entry point
-ENTRYPOINT ["nginx"]
-
-# Keep NGINX running in the foreground
-CMD ["-g", "daemon off;"]
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]
